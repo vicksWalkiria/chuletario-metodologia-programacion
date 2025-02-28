@@ -5,6 +5,9 @@
 \usepackage[utf8]{inputenc} % Soporte para caracteres UTF-8
 \usepackage[spanish]{babel} % Idioma español
 \usepackage{amsmath} % Matemáticas avanzadas
+\usepackage{minted}
+\usepackage{listings}
+\usepackage{xcolor}
 
 % Tema minimalista
 \usetheme{default}
@@ -28,6 +31,18 @@
 }
 
 \setbeamertemplate{footline}[frame number]
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{gray!10},
+    basicstyle=\ttfamily\small,  % Fuente monoespaciada
+    breaklines=true,
+    frame=single,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    columns=fullflexible  % Evita problemas de espaciado
+}
+\lstset{style=mystyle}
 
 % Inicio del documento
 \begin{document}
@@ -194,4 +209,321 @@ T(n) = a + \sum_{i=0}^n \left( b + \sum_{k=0}^n c \right) \overset{\sim}{=} a + 
 \end{itemize}
 \end{frame}
 
+\begin{frame}{Ultimate BRO TIP }
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{sumatorio-ejercicio.png}
+    \label{fig:enter-label}
+\end{figure}
+\textbf{Explicación:} 
+En este código, el bucle exterior se ejecuta mientras $y > x$, y en cada iteración, $x$ se duplica. Esto lleva a un número total de iteraciones de $O(\log n)$. Por otro lado, el bucle interno se ejecuta un número de veces dependiente de $x$, específicamente $O(2^j)$, donde $j$ es la iteración del bucle exterior.
+\end{frame}
+
+\begin{frame}{Ultimate BRO TIP: bucles anidados}
+\begin{itemize}
+    \item \textbf{Identificar iteraciones:} 
+    El bucle exterior se ejecuta $\log_2 n$ veces, lo que denominamos $j$.
+    
+    \item \textbf{Determinar el bucle interior:} 
+    En cada iteración del exterior, el número de iteraciones del interior \textbf{depende del valor actualizado de $x$}. 
+    Para cada $j$, el bucle interior ejecuta $2^j$ iteraciones (despejamos la m en la fórmula del bucle exterior).
+    
+    \item \textbf{Plantear el sumatorio:} 
+    La cantidad total de iteraciones es:
+    \[
+        \sum_{j=0}^{\log_2 n} 2^j
+    \]
+    Resolviendo el sumatorio:
+    \[
+        \sum_{j=0}^{\log_2 n} 2^j = 2^{\log_2 n + 1} - 1 = 2n - 1 \approx O(n)
+    \]
+    
+    \item \textbf{Conclusión:} 
+    A pesar de tener un bucle exterior de $O(\log n)$, el total de iteraciones es $O(n)$ debido al crecimiento exponencial del bucle interior.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Función de recurrencia}
+Identificar la recurrencia:
+\begin{itemize}
+    
+    \item \textbf{Ver las veces que se llama:} Analizar si la función se llama a sí misma y cuántas veces en cada iteración. Además, tiene que llamarse con algún cambio cada vez (si no sería un bucle infinito), es \textbf{importante identificar qué cambia}.
+    
+    \item \textbf{Ojo al manojo:} Si hay un número multiplicando la llamada recursiva, suele ser un multiplicador del resultado final, pero no necesariamente el número de llamadas.
+    
+    \item \textbf{Buscar si está en un bucle:} Interpretar el número de llamadas REALES considerando la interacción con estructuras de control como bucles.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Trampas para aventureros incautos}
+\textbf{Ejemplo 1: Llamadas en un bucle}
+\begin{lstlisting}
+function Q(a, b)
+    for i = 1 to 3 do
+        Q(a/2, b)
+    end for
+end
+\end{lstlisting}
+\textbf{Explicación:} 
+En cada iteración del bucle, la función se llama con $a/2$. Como el bucle se ejecuta 3 veces, se hacen exactamente 3 llamadas recursivas.
+
+\textbf{Ejemplo 2: Multiplicador en la llamada}
+\begin{lstlisting}
+z = 3 * Q(1,2)
+\end{lstlisting}
+\textbf{Explicación:} 
+Aquí, $Q(1,2)$ se llama solo una vez. El 3 no significa que haya 3 llamadas, sino que su resultado se multiplica por 3.
+\end{frame}
+
+\begin{frame}{Función de recurrencia (análisis detallado)}
+\begin{itemize}
+    \item \textbf{Identificar las llamadas recurrentes y con qué valores:} 
+    Analizar cómo cambian los parámetros en cada llamada. Esta parte es conocida como la \textbf{parte homogénea} de la recurrencia.
+    
+    \item \textbf{Poner el resto de costes no recurrentes:} 
+    Identificar operaciones externas a la recurrencia, que constituyen la \textbf{parte no homogénea o particular}.
+\end{itemize}
+
+\textbf{Ejemplo:}
+\[
+T(n) = 3T(n-1) - 8T(n-2) + 4T(n-3) + n^2 - 1
+\]
+\begin{itemize}
+    \item La \textbf{parte homogénea} es \( 3T(n-1) - 8T(n-2) + 4T(n-3) \), ya que describe las llamadas recursivas y cómo cambian los parámetros.
+    \item La \textbf{parte no homogénea} es \( n^2 - 1 \), que representa el coste adicional fuera de la recursión.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Ecuación característica 1}
+\begin{itemize}
+    \item Buscamos la \textbf{ecuación característica}.
+    \item \textbf{Para la parte homogénea} suponemos una solución de la forma \( T(n) = r^n \) y sustituimos en la ecuación homogénea (donde pone T(n) ponemos \( r^n\)):
+    \[
+    r^n = 3r^{n-1} - 8r^{n-2} + 4r^{n-3}
+    \]
+    \item Dividimos por \( r^{n-3} \) (\textbf{el menor exponente presente}) para obtener una ecuación polinómica:
+    \[
+    r^3 - 3r^2 + 8r - 4 = 0
+    \]
+    \item Resolvemos buscando las raíces del polinomio, generalmente con Ruffini o factorización directa (para grados 3 o más) o con la ecuación de segundo grado si es cuadrática.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Ecuación característica 2}
+\begin{itemize}
+    \item Cada solución de la ecuación homogénea se expresa en la forma \( (x - \text{raíz}) \).
+    \item Se factorizan todas las raíces encontradas para obtener la forma factorizada del polinomio.
+    \item Una vez obtenida la forma factorizada, guardamos estas soluciones y nos dirigimos a analizar la parte no homogénea.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Parte no homogénea polinómica}
+\begin{itemize}
+    \item Buscamos el término de mayor grado en la parte no homogénea.
+    \item Si el término de mayor grado es \( n^k \), generamos \( (x - 1)^{k+1} \).
+    \item Esto asegura que la forma de la solución particular tenga en cuenta la estructura del término no homogéneo.
+\end{itemize}
+
+\textbf{Ejemplo:}
+\[
+T(n) = 3T(n-1) - 8T(n-2) + 4T(n-3) + n^2 - 1
+\]
+\begin{itemize}
+    \item El término de mayor grado en la parte no homogénea es \( n^2 \), por lo que generamos \( (x - 1)^3 \).
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Parte no homogénea exponencial}
+\begin{itemize}
+    \item Si la parte no homogénea es de la forma \( (n^k * P(n))r^n \), generamos \( (x - r)^{k+1} \).
+    \item Esto garantiza que la solución particular refleje la estructura exponencial.
+\end{itemize}
+
+\textbf{Ejemplo:}
+\[
+T(n) = 2T(n-1) - 5T(n-2) + (n-5)3^n
+\]
+\begin{itemize}
+    \item La parte no homogénea es \( (n-5)3^n \), por lo que generamos \( (x - 3)^2 \). O sea, x menos la base elevado al mayor exponente del polinomio + 1.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Ecuación característica 3}
+\begin{itemize}
+    \item Una vez obtenidas las raíces de la ecuación característica, la solución general se expresa como:
+    \[
+    (x-r_1)*(x-r_2)^k = 0 
+    \]
+    donde \( r_1, r_2 \) son las raíces que hemos sacado. Si tiene más raíces, se ponen, claro.
+    
+    \item {Ejemplo:} Si la ecuación característica es \( (x-2)(x-3)^2 = 0 \), las raíces son \( r_1 = 2 \) y \( r_2 = 3 \) con multiplicidad 2. La solución general es:
+        \[
+        T(n) = A 2^n + (B + Cn) 3^n
+        \]
+    \item Para encontrar los coeficientes \( A, B, C \), se usan las condiciones iniciales de la recurrencia.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Ecuación característica Bro tips}
+\begin{itemize}
+    \item Tendremos constantes A, B, C, D, ... multiplicando a \textbf{la raíz simple que sea} elevada a n.
+    \item Para las múltiples tendremos tantas constantes nuevas como el exponente de la raíz, empezando por grado 0 hasta grado \textit{exponente - 1}. Y todo eso multiplicando a la raíz múltiple elevada a n. Observa como \[ (x-3)^2\] pasa a ser \[(B + Cn)*3^n\]
+
+   
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Ecuación característica Bro tips}
+\begin{itemize}
+       \item \textbf{BRO TIP}: Si la raíz es del tipo \[(x-1)^k\] (polinómica) date cuenta de que (B + Cn) multiplican a \[1^n\] así que pueden dejarse \textit{sueltas}, como B + Cn.
+   
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Resolver los coeficientes de la solución general 1}
+\begin{itemize}
+    \item Una vez obtenida la forma general de la solución, debemos determinar los coeficientes \( A, B, C \) usando la ecuación original y las condiciones iniciales.
+    
+    \item Dado:
+    \[
+    T(n) = A 2^n + (B + Cn) 3^n
+    \]
+    Y la ecuación base:
+    \[
+    T(n) = 2T(n-1) + (n+5)3^n
+    \]
+    con condición inicial \( T(0) = 0 \), sustituimos:
+    \[
+    0 = A 2^0 + (B + C \cdot 0) 3^0 \Rightarrow A + B = 0
+    \]
+    
+   
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Resolver los coeficientes de la solución general 2}
+\begin{itemize}
+ \item Calculamos \( T(1) \) usando la ecuación original:
+    \[
+    T(1) = 2T(0) + (1+5)3^1 = 18
+    \]
+    Sustituyendo:
+    \[
+    2A + 3B + 3C = 18
+    \]
+    
+    \item Calculamos \( T(2) \) para obtener la tercera ecuación:
+    \[
+    T(2) = 2T(1) + (2+5)3^2 = 36 + 63 = 99
+    \]
+    Sustituyendo:
+    \[
+    4A + 9B + 18C = 99
+    \]
+    
+    \item Resolviendo el sistema de ecuaciones obtenemos los valores de \( A, B, C \).
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Resolviendo el sistema de ecuaciones like a pro}
+\begin{itemize}
+    \item Tenemos el sistema:
+    \[
+    A + B = 0
+    \]
+    \[
+    2A + 3B + 3C = 18
+    \]
+    \[
+    4A + 9B + 18C = 99
+    \]
+    
+    \item Existen varios métodos para resolverlo: \textbf{igualación}, \textbf{sustitución} y \textbf{reducción}.
+    
+    \item De la primera ecuación: \( A = -B \).
+    
+    \item Sustituyendo en la segunda ecuación:
+    \[
+    2(-B) + 3B + 3C = 18 \Rightarrow -2B + 3B + 3C = 18 \Rightarrow B + 3C = 18
+    \]
+    
+    \item Sustituyendo en la tercera ecuación:
+    \[
+    4(-B) + 9B + 18C = 99 \Rightarrow -4B + 9B + 18C = 99 \Rightarrow 5B + 18C = 99
+    \]
+    
+    \item Ahora nos quedan 2 ecuaciones con dos incognitas que ya sabemos resolver repitiendo el proceso.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Ultra BRO Tip: Verificación de la solución}
+\begin{itemize}
+    \item Una vez obtenidos los valores de \( A, B, C \), podemos verificar si la solución es correcta calculando \( T(n) \) para un valor ya comprobado en la ecuación original.
+    
+    \item Tomamos \( n = 2 \) y usamos nuestra solución:
+    \[
+    T(2) = A 2^2 + (B + C \cdot 2) 3^2
+    \]
+    Sustituyendo \( A = -9, B = 9, C = 3 \):
+    \[
+    T(2) = (-9) 4 + (9 + 3 \cdot 2) 9
+    \]
+    \[
+    = -36 + (9 + 6) 9
+    \]
+    \[
+    = -36 + 135 = 99
+    \]
+    
+    \item Como obtenemos \( 99 \), que es el mismo valor calculado previamente con la ecuación original en T(2), nuestra solución es correcta.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Bronus Track: Ejercicios de cambio de variable}
+\begin{itemize}
+    \item Cuando las llamadas recurrentes incluyen divisiones, podemos hacer un cambio de variable para simplificar la ecuación.
+    \item Ejemplo: 
+    \[
+    T(n) = 4T(n/3) + \log_3(n)
+    \]
+    
+    \item Hacemos el cambio \( n = 3^i \), sustituyendo:
+    \[
+    T(3^i) = 4T(3^{i-1}) + i
+    \]
+    Como \( \log_3(3^i) = i \). Por eso queda i. Ahora, podemos considerar \[T(3^i)\] como \[t(i)\] la ecuación se reescribe como:
+    \[
+    t(i) = 4t(i-1) + i
+    \]
+    
+    
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Bronus Track: Ejercicios de cambio de variable 2}
+\begin{itemize}
+   \item Ahora resolvemos la recurrencia en función de \( i \) en lugar de \( n \), lo que simplifica su análisis.
+   \item Una vez finalizado, tendremos algo de la forma:
+   \[t(i) = A*3^i + B + Ci\]
+   \item  Es entonces cuando deshacemos el cambio de variable, donde ponía \[3^i\] ponemos \textit{n}. Y donde ponía \textit{i} ponemos \[log_3n\].
+   \item Y queda: \[T(n) = An + B + Clog_3n\]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Happy learning!}
+Happy learning!
+\end{frame}
 \end{document}
+
+\end{document}
+
+
+
+
