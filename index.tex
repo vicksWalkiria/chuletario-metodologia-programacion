@@ -209,37 +209,48 @@ T(n) = a + \sum_{i=0}^n \left( b + \sum_{k=0}^n c \right) \overset{\sim}{=} a + 
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Ultimate BRO TIP }
+\begin{frame}{Ultimate BRO TIP: Bucles anidados 1 }
 \begin{figure}
     \centering
     \includegraphics[width=0.5\linewidth]{sumatorio-ejercicio.png}
     \label{fig:enter-label}
 \end{figure}
 \textbf{Explicación:} 
-En este código, el bucle exterior se ejecuta mientras $y > x$, y en cada iteración, $x$ se duplica. Esto lleva a un número total de iteraciones de $O(\log n)$. Por otro lado, el bucle interno se ejecuta un número de veces dependiente de $x$, específicamente $O(2^j)$, donde $j$ es la iteración del bucle exterior.
+En este código, el bucle exterior se ejecuta mientras $y > x$, y en cada iteración, $x$ se duplica. Esto lleva a un número total de iteraciones de $O(\log n)$. Por otro lado, el bucle interno se ejecuta un número de veces dependiente de $x$, por lo que despejamos su número de vueltas en función de las vueltas del exterior.
 \end{frame}
 
-\begin{frame}{Ultimate BRO TIP: bucles anidados}
+\begin{frame}{Ultimate BRO TIP: Bucles anidados 2}
 \begin{itemize}
-    \item \textbf{Identificar iteraciones:} 
-    El bucle exterior se ejecuta $\log_2 n$ veces, lo que denominamos $j$.
+    \item \textbf{Identificar iteraciones y tamaño del problema:} 
+    Nuestro tamaño del problema es una variable que tomaremos para simplificar los cálculos. En este caso la llamaremos \textit{m}. \(m = y/x\). El bucle exterior se ejecuta $\log_2 m$ veces, lo que denominamos $j$.
     
     \item \textbf{Determinar el bucle interior:} 
-    En cada iteración del exterior, el número de iteraciones del interior \textbf{depende del valor actualizado de $x$}. 
+    En cada iteración del bucle exterior, el número de iteraciones del interior \textbf{depende del valor actualizado de la variable $x$}, o de nuestra nueva variable m. 
     Para cada $j$, el bucle interior ejecuta $2^j$ iteraciones (despejamos la m en la fórmula del bucle exterior).
-    
+    \[ j = log_2 m  => m = 2^j \]
+
+    \item Tomemos \(y = 32\) y \(x = 1\). El bucle exterior se ejecuta \(log_232 = 5\) veces.
+    \item El interior se ejecuta: 17 veces, luego 9, 5 veces, ...
+    \item En realidad es \(2^j + 1\) veces, pero sabemos que una iteración no afecta al orden de complejidad.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Ultimate BRO TIP: bucles anidados 3}
+\begin{itemize}
+
     \item \textbf{Plantear el sumatorio:} 
     La cantidad total de iteraciones es:
     \[
-        \sum_{j=0}^{\log_2 n} 2^j
+        \sum_{j=0}^{\log_2 m} 2^j
     \]
     Resolviendo el sumatorio:
     \[
-        \sum_{j=0}^{\log_2 n} 2^j = 2^{\log_2 n + 1} - 1 = 2n - 1 \approx O(n)
+        \sum_{j=0}^{\log_2 m} 2^j = 2^{\log_2 m* } = 2m  \approx O(m)
     \]
     
     \item \textbf{Conclusión:} 
-    A pesar de tener un bucle exterior de $O(\log n)$, el total de iteraciones es $O(n)$ debido al crecimiento exponencial del bucle interior.
+    A pesar de tener un bucle exterior de $O(\log m)$, el total de iteraciones es $O(m)$ debido al impacto del bucle interior.
+    \item *Recuerda que \(a^{log_ab} = b\)
 \end{itemize}
 \end{frame}
 
@@ -249,7 +260,7 @@ Identificar la recurrencia:
     
     \item \textbf{Ver las veces que se llama:} Analizar si la función se llama a sí misma y cuántas veces en cada iteración. Además, tiene que llamarse con algún cambio cada vez (si no sería un bucle infinito), es \textbf{importante identificar qué cambia}.
     
-    \item \textbf{Ojo al manojo:} Si hay un número multiplicando la llamada recursiva, suele ser un multiplicador del resultado final, pero no necesariamente el número de llamadas.
+    \item \textbf{Ojo al manojo:} Si hay un número multiplicando la llamada recursiva, suele ser un multiplicador del resultado final, pero no necesariamente el número de llamadas. \textbf{It's a trap!}
     
     \item \textbf{Buscar si está en un bucle:} Interpretar el número de llamadas REALES considerando la interacción con estructuras de control como bucles.
 \end{itemize}
@@ -352,25 +363,25 @@ T(n) = 2T(n-1) - 5T(n-2) + (n-5)3^n
 
 \begin{frame}{Ecuación característica 3}
 \begin{itemize}
-    \item Una vez obtenidas las raíces de la ecuación característica, la solución general se expresa como:
+    \item Una vez obtenidas las raíces la ecuación característica se expresa como:
     \[
     (x-r_1)*(x-r_2)^k = 0 
     \]
-    donde \( r_1, r_2 \) son las raíces que hemos sacado. Si tiene más raíces, se ponen, claro.
+    donde \( r_1, r_2 \) son las raíces que hemos sacado. Si tiene más raíces se ponen, claro.
     
     \item {Ejemplo:} Si la ecuación característica es \( (x-2)(x-3)^2 = 0 \), las raíces son \( r_1 = 2 \) y \( r_2 = 3 \) con multiplicidad 2. La solución general es:
         \[
-        T(n) = A 2^n + (B + Cn) 3^n
+        T(n) = C_1 2^n + (C_2 + C_3n) 3^n
         \]
-    \item Para encontrar los coeficientes \( A, B, C \), se usan las condiciones iniciales de la recurrencia.
+    \item Para encontrar los coeficientes \( C_1, C_2, C_3 \), se usan las condiciones iniciales de la recurrencia.
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}{Ecuación característica Bro tips}
 \begin{itemize}
-    \item Tendremos constantes A, B, C, D, ... multiplicando a \textbf{la raíz simple que sea} elevada a n.
-    \item Para las múltiples tendremos tantas constantes nuevas como el exponente de la raíz, empezando por grado 0 hasta grado \textit{exponente - 1}. Y todo eso multiplicando a la raíz múltiple elevada a n. Observa como \[ (x-3)^2\] pasa a ser \[(B + Cn)*3^n\]
+    \item Tendremos constantes \( C_1, C_2, C_3, C_4, ... \) multiplicando a \textbf{la raíz simple} que esté elevada a n.
+    \item Para las múltiples tendremos tantas constantes nuevas como el exponente de la raíz, empezando por grado 0 hasta grado \textit{exponente - 1}. Y todo eso multiplicando a la raíz múltiple elevada a n. Observa como \[ (x-3)^2\] pasa a ser \[(C_2 + C_3n)*3^n\]
 
    
 \end{itemize}
@@ -379,18 +390,18 @@ T(n) = 2T(n-1) - 5T(n-2) + (n-5)3^n
 
 \begin{frame}{Ecuación característica Bro tips}
 \begin{itemize}
-       \item \textbf{BRO TIP}: Si la raíz es del tipo \[(x-1)^k\] (polinómica) date cuenta de que (B + Cn) multiplican a \[1^n\] así que pueden dejarse \textit{sueltas}, como B + Cn.
+       \item \textbf{BRO TIP}: Si la raíz es del tipo \((x-1)^k\) (polinómica) date cuenta de que (\(C_2 + C_3n)\) multiplican a \(1^n\) así que pueden dejarse \textit{sueltas}, como \(C_2 + C_3n\).
    
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Resolver los coeficientes de la solución general 1}
 \begin{itemize}
-    \item Una vez obtenida la forma general de la solución, debemos determinar los coeficientes \( A, B, C \) usando la ecuación original y las condiciones iniciales.
+    \item Una vez obtenida la forma general de la solución, debemos determinar los coeficientes  \( C_1, C_2, C_3, C_4, ... \) usando la ecuación original y las condiciones iniciales.
     
     \item Dado:
     \[
-    T(n) = A 2^n + (B + Cn) 3^n
+    T(n) = C_1 2^n + (C_2 + C_3n) 3^n
     \]
     Y la ecuación base:
     \[
@@ -398,7 +409,7 @@ T(n) = 2T(n-1) - 5T(n-2) + (n-5)3^n
     \]
     con condición inicial \( T(0) = 0 \), sustituimos:
     \[
-    0 = A 2^0 + (B + C \cdot 0) 3^0 \Rightarrow A + B = 0
+    0 = C_1 2^0 + (C_2 + C_3 \cdot 0) 3^0 \Rightarrow C_1 + C_2 = 0
     \]
     
    
@@ -414,7 +425,7 @@ T(n) = 2T(n-1) - 5T(n-2) + (n-5)3^n
     \]
     Sustituyendo:
     \[
-    2A + 3B + 3C = 18
+    2C_1 + 3C_2 + 3C_3 = 18
     \]
     
     \item Calculamos \( T(2) \) para obtener la tercera ecuación:
@@ -423,10 +434,10 @@ T(n) = 2T(n-1) - 5T(n-2) + (n-5)3^n
     \]
     Sustituyendo:
     \[
-    4A + 9B + 18C = 99
+    4C_1 + 9C_2 + 18C_3 = 99
     \]
     
-    \item Resolviendo el sistema de ecuaciones obtenemos los valores de \( A, B, C \).
+    \item Resolviendo el sistema de ecuaciones obtenemos los valores de \( C_1, C_2, C_3 \).
 \end{itemize}
 \end{frame}
 
@@ -434,43 +445,43 @@ T(n) = 2T(n-1) - 5T(n-2) + (n-5)3^n
 \begin{itemize}
     \item Tenemos el sistema:
     \[
-    A + B = 0
+    C_1 + C_2 = 0
     \]
     \[
-    2A + 3B + 3C = 18
+    2C_1 + 3C_2 + 3C_3 = 18
     \]
     \[
-    4A + 9B + 18C = 99
+    4C_1 + 9C_2 + 18C_3 = 99
     \]
     
     \item Existen varios métodos para resolverlo: \textbf{igualación}, \textbf{sustitución} y \textbf{reducción}.
     
-    \item De la primera ecuación: \( A = -B \).
+    \item De la primera ecuación: \( C_1 = -C_2 \).
     
     \item Sustituyendo en la segunda ecuación:
     \[
-    2(-B) + 3B + 3C = 18 \Rightarrow -2B + 3B + 3C = 18 \Rightarrow B + 3C = 18
+    2(-C_2) + 3C_2 + 3C_3 = 18 \Rightarrow -2C_2 + 3C_2 + 3C_3 = 18 \Rightarrow C_2 + 3C_3 = 18
     \]
     
     \item Sustituyendo en la tercera ecuación:
     \[
-    4(-B) + 9B + 18C = 99 \Rightarrow -4B + 9B + 18C = 99 \Rightarrow 5B + 18C = 99
+    4(-C_2) + 9C_2 + 18C_3 = 99 \Rightarrow -4B + 9C_2 + 18C_3 = 99 \Rightarrow 5C_2 + 18C_3 = 99
     \]
     
-    \item Ahora nos quedan 2 ecuaciones con dos incognitas que ya sabemos resolver repitiendo el proceso.
+    \item Ahora nos quedan 2 ecuaciones con dos incógnitas que ya sabemos resolver repitiendo el proceso.
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}{Ultra BRO Tip: Verificación de la solución}
 \begin{itemize}
-    \item Una vez obtenidos los valores de \( A, B, C \), podemos verificar si la solución es correcta calculando \( T(n) \) para un valor ya comprobado en la ecuación original.
+    \item Una vez obtenidos los valores de \( C_1, C_2, C_3 \), podemos verificar si la solución es correcta calculando \( T(n) \) para un valor ya comprobado en la ecuación original.
     
     \item Tomamos \( n = 2 \) y usamos nuestra solución:
     \[
-    T(2) = A 2^2 + (B + C \cdot 2) 3^2
+    T(2) = C_1 2^2 + (C_2 + C_3 \cdot 2) 3^2
     \]
-    Sustituyendo \( A = -9, B = 9, C = 3 \):
+    Sustituyendo \( C_1 = -9, C_2 = 9, C_3 = 3 \):
     \[
     T(2) = (-9) 4 + (9 + 3 \cdot 2) 9
     \]
@@ -494,13 +505,13 @@ T(n) = 2T(n-1) - 5T(n-2) + (n-5)3^n
     T(n) = 4T(n/3) + \log_3(n)
     \]
     
-    \item Hacemos el cambio \( n = 3^i \), sustituyendo:
+    \item Hacemos el cambio \( n = 3^m \), sustituyendo:
     \[
-    T(3^i) = 4T(3^{i-1}) + i
+    T(3^m) = 4T(3^{m-1}) + m
     \]
-    Como \( \log_3(3^i) = i \). Por eso queda i. Ahora, podemos considerar \[T(3^i)\] como \[t(i)\] la ecuación se reescribe como:
+    Como \( \log_3(3^m) = m \), queda m. Ahora, podemos considerar \(T(3^m)\) como \(t(m)\) la ecuación se reescribe como:
     \[
-    t(i) = 4t(i-1) + i
+    t(m) = 4t(m-1) + m
     \]
     
     
@@ -509,11 +520,11 @@ T(n) = 2T(n-1) - 5T(n-2) + (n-5)3^n
 
 \begin{frame}{Bronus Track: Ejercicios de cambio de variable 2}
 \begin{itemize}
-   \item Ahora resolvemos la recurrencia en función de \( i \) en lugar de \( n \), lo que simplifica su análisis.
+   \item Resolvemos la recurrencia en función de \( m \) en lugar de \( n \), lo que simplifica su análisis.
    \item Una vez finalizado, tendremos algo de la forma:
-   \[t(i) = A*3^i + B + Ci\]
-   \item  Es entonces cuando deshacemos el cambio de variable, donde ponía \[3^i\] ponemos \textit{n}. Y donde ponía \textit{i} ponemos \[log_3n\].
-   \item Y queda: \[T(n) = An + B + Clog_3n\]
+   \[t(m) = C_1*3^m + C_2 + C_3m\]
+   \item  Es entonces cuando deshacemos el cambio de variable, donde ponía \(3^m\) ponemos \textit{n}. Y donde ponía \textit{m} ponemos \(log_3n\).
+   \item Y queda: \[T(n) = C_1n + C_2 + C_3log_3n\]
 \end{itemize}
 \end{frame}
 
