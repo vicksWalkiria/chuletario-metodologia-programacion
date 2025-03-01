@@ -222,16 +222,14 @@ En este código, el bucle exterior se ejecuta mientras $y > x$, y en cada iterac
 \begin{frame}{Ultimate BRO TIP: Bucles anidados 2}
 \begin{itemize}
     \item \textbf{Identificar iteraciones y tamaño del problema:} 
-    Nuestro tamaño del problema es una variable que tomaremos para simplificar los cálculos. En este caso la llamaremos \textit{m}. \(m = y/x\). El bucle exterior se ejecuta $\log_2 m$ veces, lo que denominamos $j$.
+    Nuestro tamaño del problema es una variable que tomaremos para simplificar los cálculos. En este caso la llamaremos \textit{m}. \(m = y/x\). El bucle exterior se ejecuta $\log_2 m$ veces, lo que denominamos $v$.
     
     \item \textbf{Determinar el bucle interior:} 
-    En cada iteración del bucle exterior, el número de iteraciones del interior \textbf{depende del valor actualizado de la variable $x$}, o de nuestra nueva variable m. 
-    Para cada $j$, el bucle interior ejecuta $2^j$ iteraciones (despejamos la m en la fórmula del bucle exterior).
-    \[ j = log_2 m  => m = 2^j \]
+    En cada iteración del bucle exterior, el número de iteraciones del interior \textbf{depende del valor actualizado de la variable $x$}, o de nuestra nueva variable m. Calculamos el número de iteraciones del bucle interiór \textit{en función de m}.
 
-    \item Tomemos \(y = 32\) y \(x = 1\). El bucle exterior se ejecuta \(log_232 = 5\) veces.
-    \item El interior se ejecuta: 17 veces, luego 9, 5 veces, ...
-    \item En realidad es \(2^j + 1\) veces, pero sabemos que una iteración no afecta al orden de complejidad.
+    \item Tomemos \(y = 32\) y \(x = 1\). El bucle exterior se ejecuta \(log_232 = 5\) veces. Cada vuelta sería \textit{v}.
+    \item El interior se ejecuta: 32 veces para v=0, 16 veces para v=1, luego 8, 4, 2, ...
+    \item En realidad es \(m/2^v\) veces.
 \end{itemize}
 \end{frame}
 
@@ -241,16 +239,20 @@ En este código, el bucle exterior se ejecuta mientras $y > x$, y en cada iterac
     \item \textbf{Plantear el sumatorio:} 
     La cantidad total de iteraciones es:
     \[
-        \sum_{j=0}^{\log_2 m} 2^j
+        \sum_{j=0}^{\log_2 m} (a + \sum_{i=1}^{m/2^v} b)
     \]
     Resolviendo el sumatorio:
-    \[
-        \sum_{j=0}^{\log_2 m} 2^j = 2^{\log_2 m* } = 2m  \approx O(m)
-    \]
+\[
+\sum_{v=1}^{\log_2 m} \left( a + \sum_{i=1}^{m/2^v} b \right) \overset{\sim}{=} 
+\sum_{v=1}^{\log_2 m} \left( a + b \cdot \frac{m}{2^v} \right) \overset{\sim}{=} a\cdot log_2m + b\cdot m \cdot \sum_{v=1}^{\log_2 m} 1/2^v  \overset{\sim}{=} m \in \mathcal{O}(m)
+\]
+
+
+
     
-    \item \textbf{Conclusión:} 
-    A pesar de tener un bucle exterior de $O(\log m)$, el total de iteraciones es $O(m)$ debido al impacto del bucle interior.
-    \item *Recuerda que \(a^{log_ab} = b\)
+    \item \textbf{¿Por qué O(m)?:} 
+    El sumatorio que nos queda es una serie geométrica de razón (1/2) y converge a 1, así que comparamos \(\log m\) VS m y determinamos que el orden predominante es \textbf{m}.
+  
 \end{itemize}
 \end{frame}
 
@@ -534,7 +536,3 @@ Happy learning!
 \end{document}
 
 \end{document}
-
-
-
-
